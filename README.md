@@ -125,10 +125,12 @@ replace the example address with the server's LAN address:
 
 ```dotenv
 API_BASE_URL=http://192.168.1.100:28000
+FRONTEND_PORT=3001
 ```
 
 The frontend embeds this value during its Docker build. `localhost` would point
-to the device running the browser, not the home server.
+to the device running the browser, not the home server. Open the UI at
+`http://192.168.1.100:3001` unless you choose another `FRONTEND_PORT`.
 
 Backend will be available on `http://localhost:8000` and the Redis cache on `6379`.
 

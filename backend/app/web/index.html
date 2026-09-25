@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ayanm | Panchanga</title>
+  <title>GHADI | Panchanga</title>
   <link rel="stylesheet" href="/assets/styles.css?v=ui-audit-2">
 </head>
 <body>
   <main class="app-shell">
     <header class="masthead">
-      <a class="brand" href="/"><span class="brand-mark">ॐ</span><span>AYANM</span><i></i><span>Panchanga</span></a>
+      <a class="brand" href="/"><span class="brand-mark">ॐ</span><span>GHADI</span><i></i><span>Panchanga</span></a>
       <div class="masthead-actions">
         <button class="place-button" data-view="settings" type="button"><span class="place-pin">●</span><span id="location-label">Selected location</span></button>
         <div class="language-switch" role="group" aria-label="Language"><button type="button" data-language="en" aria-pressed="true">EN</button><button type="button" data-language="hi" aria-pressed="false">हिं</button></div>
@@ -30,7 +30,7 @@
       <section id="dashboard" class="view active">
         <section class="cosmic-hero" aria-label="Current local Panchanga">
           <div class="dial-wrap" aria-hidden="true"><div class="sun-dial"><span class="dial-dot dot-one"></span><span class="dial-dot dot-two"></span><span class="dial-dot dot-three"></span><i id="clock-hour-hand" class="hour-hand"></i><i id="clock-minute-hand" class="minute-hand"></i><b></b></div></div>
-          <div class="hero-reading"><p class="eyebrow" data-i18n="localPanchanga">AYANM / LOCAL PANCHANGA</p><h1 id="hero-time">--:--</h1><p id="hero-period">--</p><div class="hero-rule"></div><p id="hero-summary">Calculating celestial data</p><p id="muhurta-countdown">Calculating for the selected location.</p></div>
+          <div class="hero-reading"><p class="eyebrow" data-i18n="localPanchanga">GHADI / LOCAL PANCHANGA</p><h1 id="hero-time">--:--</h1><p id="hero-period">--</p><div class="hero-rule"></div><p id="hero-summary">Calculating celestial data</p><p id="muhurta-countdown">Calculating for the selected location.</p></div>
         </section>
 
         <section class="today-section">
@@ -53,7 +53,7 @@
 
       <section id="clock" class="view centered"><p class="eyebrow clock-view-label">LIVE LOCAL TIME</p><div class="cosmic-clock"><span id="large-time">--:--:--</span><small id="clock-detail">Calculating location-based celestial data</small></div></section>
       <section id="panchanga" class="view data-view"><p class="eyebrow">TODAY’S PANCHANGA</p><h2 id="panchanga-heading">Calculating today’s reading</h2><div id="detail-grid" class="detail-grid"></div></section>
-      <section id="calendar" class="view calendar-view"><div class="calendar-top"><div><p class="eyebrow">PAN-INDIAN OBSERVANCES</p><h2 id="calendar-title">Festival Calendar</h2></div><div class="calendar-controls"><button id="previous-month" class="round-button" type="button" aria-label="Previous month">‹</button><button id="calendar-today" class="warm-button" type="button">Today</button><button id="next-month" class="round-button" type="button" aria-label="Next month">›</button></div></div><p id="calendar-note" class="calendar-note">Lunar observance dates can vary by region and tradition. This catalog is a maintained pan-Indian reference.</p><div class="weekday-row"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="calendar-grid" class="calendar-grid" aria-live="polite"></div><section class="calendar-events"><h3 id="calendar-events-title">Events this month</h3><div id="calendar-events-list"></div></section></section>
+      <section id="calendar" class="view calendar-view"><div class="calendar-top"><div><p class="eyebrow">PAN-INDIAN OBSERVANCES</p><h2 id="calendar-title">Festival Calendar</h2></div><div class="calendar-controls"><button id="previous-month" class="round-button" type="button" aria-label="Previous month">‹</button><button id="calendar-today" class="warm-button" type="button">Today</button><button id="next-month" class="round-button" type="button" aria-label="Next month">›</button></div></div><div class="calendar-summary"><span class="calendar-summary-mark">✦</span><div><strong id="calendar-count">0 observances</strong><span id="calendar-note">Lunar dates may vary by region and tradition.</span></div><div class="calendar-legend" aria-label="Festival categories"><span><i class="legend-dot lunar-dot"></i>Lunar</span><span><i class="legend-dot national-dot"></i>National</span></div></div><div class="weekday-row"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="calendar-grid" class="calendar-grid" aria-live="polite"></div><section class="calendar-events"><div class="calendar-events-heading"><div><p class="eyebrow">MONTHLY GUIDE</p><h3 id="calendar-events-title">Events this month</h3></div><span class="calendar-events-count" id="calendar-events-count">0</span></div><div id="calendar-events-list"></div></section></section>
       <section id="settings" class="view data-view"><p class="eyebrow">LOCATION CALIBRATION</p><h2 id="location-heading">Calculate for any location</h2><form id="location-form" class="settings-form"><label><span data-i18n="latitude">Latitude</span><input id="latitude" type="number" min="-90" max="90" step="any" value="25.3176" required></label><label><span data-i18n="longitude">Longitude</span><input id="longitude" type="number" min="-180" max="180" step="any" value="82.9739" required></label><label><span data-i18n="timezoneLabel">Timezone</span><input id="timezone" value="Asia/Kolkata" required></label><label><span data-i18n="elevation">Elevation (metres)</span><input id="elevation" type="number" min="-500" max="10000" step="any" value="0"></label><div class="location-actions"><button type="button" id="device-location">Use device location</button><button type="button" id="share-location">Copy share link</button><button type="submit">Recalculate</button></div><p id="settings-message" class="form-error" aria-live="polite"></p></form></section>
     </section>
   </main>

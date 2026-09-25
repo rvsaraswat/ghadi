@@ -2,4 +2,4 @@ import 'package:flutter/material.dart';
 
 import 'app/app.dart';
 
-void main() => runApp(const AyanmApp());
+void main() => runApp(const GhadiApp());

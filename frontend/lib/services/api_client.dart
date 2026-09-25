@@ -85,7 +85,7 @@ class ApiClient {
         _ => throw UnsupportedError('Unsupported request method: $method'),
       };
     } on Exception {
-      throw const ApiException('Unable to reach Ayanm. Check your connection and try again.');
+      throw const ApiException('Unable to reach GHADI. Check your connection and try again.');
     }
     final decoded = response.body.isEmpty ? <String, dynamic>{} : jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode < 200 || response.statusCode >= 300) {

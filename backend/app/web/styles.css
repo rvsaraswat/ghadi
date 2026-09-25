@@ -24,3 +24,49 @@ button,input { font:inherit; } button { cursor:pointer; } .app-shell { min-heigh
 .settings-form { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:20px; }.settings-form label { color:#7e3b49; font-size:12px; font-weight:800; }.settings-form input { display:block; width:100%; margin-top:5px; padding:10px; color:var(--ink); background:#fffbed; border:1px solid #d9ae76; border-radius:4px; }.location-actions { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:9px; }.location-actions button { padding:10px 13px; color:var(--wine); background:transparent; border:1px solid var(--wine); border-radius:4px; font-weight:800; }.location-actions button:last-child { color:#fff; background:var(--wine); }.form-error { grid-column:1/-1; margin:0; color:#ad263c; font-size:13px; }
 @media (max-width:900px) { .feature-grid { grid-template-columns:repeat(2,1fr); }.festival-strip { grid-template-columns:1fr 1fr; }.utility-section { grid-template-columns:1fr; } }
 @media (max-width:650px) { .masthead { min-height:64px; padding:9px 15px; }.brand { font-size:18px; }.brand-mark { width:34px; height:34px; }.brand i,.brand span:last-child { display:none; }.place-button { max-width:130px; padding:7px; }.place-button span:last-child { font-size:11px; }.top-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; padding:6px 7px; }.nav { min-width:0; justify-content:center; flex-direction:column; gap:2px; padding:7px 2px; font-size:10px; text-align:center; }.nav span:last-child { max-width:100%; white-space:normal; }.workspace { width:min(100% - 24px,1240px); margin:12px auto 30px; }.cosmic-hero { grid-template-columns:1fr; }.dial-wrap { min-height:230px; }.sun-dial { width:166px; }.hero-reading { min-height:190px; padding:23px; }.hero-reading h1 { font-size:48px; }.feature-grid,.festival-strip { grid-template-columns:1fr; }.feature-card { min-height:115px; }.quick-stats { grid-template-columns:1fr 1fr; gap:11px 0; }.quick-stats div:nth-child(3) { border-left:0; padding-left:0; }.calendar-top { align-items:flex-start; flex-direction:column; }.calendar-day { min-height:64px; padding:5px; }.festival-chip { font-size:8px; }.weekday-row { font-size:9px; }.settings-form { grid-template-columns:1fr; }.data-view,.calendar-view { padding:20px 14px; }.fact-grid,.detail-grid { grid-template-columns:1fr 1fr; }.timeline-track { transform:scaleX(.96); transform-origin:left; }.celestial-marker b { display:none; } }
+
+/* Calendar uses a quieter grid and a stronger event hierarchy than the dashboard cards. */
+.calendar-view { background:rgba(255,249,231,.9); box-shadow:0 14px 30px rgba(83,21,47,.12); }
+.calendar-summary { display:flex; align-items:center; gap:12px; margin:22px 0 18px; padding:13px 16px; color:#6f3348; background:#fff4d5; border:1px solid #e6c98e; border-radius:5px; }
+.calendar-summary-mark { display:grid; width:32px; height:32px; place-items:center; color:#fff; background:var(--coral); border-radius:50%; }
+.calendar-summary strong,.calendar-summary span { display:block; }
+.calendar-summary strong { font-family:Fraunces,serif; font-size:18px; }
+.calendar-summary div > span { margin-top:2px; color:#986d65; font-size:11px; }
+.calendar-legend { display:flex; gap:14px; margin-left:auto; }
+.calendar-legend span { display:flex!important; align-items:center; gap:5px; color:#704354!important; font-size:11px; }
+.legend-dot { display:inline-block; width:8px; height:8px; border-radius:50%; }
+.lunar-dot { background:#bd4a48; }.national-dot { background:#2d8d6e; }
+.weekday-row { padding:0 4px; color:#7e3449; letter-spacing:.06em; }
+.calendar-grid { gap:7px; margin-top:9px; }
+.calendar-day { min-height:96px; padding:9px; background:#fffdf6; border-color:#ead7ae; transition:border-color .16s ease,transform .16s ease,box-shadow .16s ease; }
+.calendar-day:hover { z-index:1; border-color:#c87558; box-shadow:0 5px 12px rgba(106,22,57,.1); transform:translateY(-1px); }
+.calendar-day > span { display:inline-grid; width:24px; height:24px; place-items:center; color:#733149; font:12px "DM Mono",monospace; border-radius:50%; }
+.calendar-day.today > span { color:#fff; background:var(--coral); }
+.calendar-day.has-festival { background:#fff8e6; }
+.festival-chip { margin-top:8px; padding:4px 6px; border-radius:3px; font-size:10px; font-weight:700; }
+.lunar-chip { background:#bd4a48; }.national-chip { background:#2d8d6e; }
+.calendar-events { margin-top:30px; padding-top:20px; border-top:1px solid #e6cfa4; }
+.calendar-events-heading { display:flex; align-items:end; justify-content:space-between; gap:12px; }
+.calendar-events-heading .eyebrow { margin-bottom:4px; }.calendar-events-heading h3 { font-size:23px; }
+.calendar-events-count { display:grid; width:30px; height:30px; place-items:center; color:#fff; background:var(--wine); border-radius:50%; font:12px "DM Mono",monospace; }
+.calendar-event { display:grid; grid-template-columns:92px 1fr; column-gap:18px; padding:15px 0; }
+.calendar-event small { grid-row:span 2; color:#a04b45; font:11px "DM Mono",monospace; }.calendar-event strong { font-family:Fraunces,serif; font-size:18px; }.calendar-event p { margin:3px 0 0; }
+@media (max-width:650px) { .calendar-summary { align-items:flex-start; flex-wrap:wrap; }.calendar-legend { width:100%; margin-left:44px; }.calendar-day { min-height:78px; }.calendar-event { grid-template-columns:78px 1fr; column-gap:10px; } }
+
+/* Timeline positions are supplied by app.js through custom properties. */
+.timeline-track { overflow:visible; }
+.daylight { left:var(--start, 0%); width:var(--span, 0%); }
+.timeline-window { left:var(--start, 0%); width:max(42px, var(--span, 0%)); }
+.timeline-window.brahma { top:43px; }
+.timeline-window.rahu { top:66px; }
+.celestial-marker { left:var(--position, 0%); min-width:84px; white-space:nowrap; }
+.sunrise-marker,.sunset-marker { top:3px; }
+.moonrise-marker,.moonset-marker { top:20px; }
+.now-marker { left:var(--position, 0%); z-index:4; }
+.now-marker span { white-space:nowrap; }
+@media (max-width:650px) {
+	.timeline-track { height:112px; }
+	.timeline-window.rahu { top:66px; }
+	.celestial-marker { min-width:0; }
+	.celestial-marker b { display:block; max-width:88px; overflow:hidden; text-overflow:ellipsis; }
+}
