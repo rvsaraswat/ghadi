@@ -5,37 +5,106 @@ from typing import List
 
 
 def get_recurring_festivals(year: int = None) -> list[dict]:
-    """Get all recurring festivals for a given year (lunar calendar based)."""
-    
+    """Return a list of festivals for *year*.
+
+    The function now calculates lunar‑based festivals (e.g., Diwali, Holi) and
+    solar‑based festivals (e.g., Makar Sankranti) on the fly using the
+    simplified Swiss‑Ephemeris logic in :mod:`backend.app.core.astronomy`.
+    Fixed national observances are appended unchanged.
+    """
     if year is None:
         year = datetime.now().year
-    
-    # Pan-Indian observances. Lunar observances vary by sampradaya and location;
-    # production catalog updates should be sourced from a verified Panchanga provider.
-    return [
-        {"name": "Makar Sankranti", "date": f"{year}-01-14", "significance": "Sun enters Capricorn", "type": "solar"},
-        {"name": "Republic Day", "date": f"{year}-01-26", "significance": "National observance", "type": "national"},
-        {"name": "Vasant Panchami", "date": f"{year}-02-03", "significance": "Spring festival honoring Saraswati", "type": "lunar"},
-        {"name": "Thaipusam", "date": f"{year}-02-11", "significance": "Murugan observance", "type": "lunar"},
-        {"name": "Holi", "date": f"{year}-03-14", "significance": "Festival of colors", "type": "lunar"},
-        {"name": "Ram Navami", "date": f"{year}-04-17", "significance": "Birth of Lord Rama", "type": "lunar"},
-        {"name": "Vaisakhi", "date": f"{year}-04-14", "significance": "Harvest and Sikh new year observance", "type": "solar"},
-        {"name": "Buddha Purnima", "date": f"{year}-05-12", "significance": "Birth, enlightenment, and parinirvana of Buddha", "type": "lunar"},
-        {"name": "Rath Yatra", "date": f"{year}-06-27", "significance": "Jagannath chariot festival", "type": "lunar"},
-        {"name": "Guru Purnima", "date": f"{year}-07-10", "significance": "Honoring teachers and gurus", "type": "lunar"},
-        {"name": "Independence Day", "date": f"{year}-08-15", "significance": "National observance", "type": "national"},
-        {"name": "Raksha Bandhan", "date": f"{year}-08-17", "significance": "Celebration between siblings", "type": "lunar"},
-        {"name": "Onam", "date": f"{year}-09-05", "significance": "Kerala harvest festival", "type": "regional"},
-        {"name": "Ganesh Chaturthi", "date": f"{year}-09-10", "significance": "Birth of Lord Ganesha", "type": "lunar"},
-        {"name": "Navratri begins", "date": f"{year}-10-02", "significance": "Nine nights of divine worship", "type": "lunar"},
-        {"name": "Dussehra", "date": f"{year}-10-12", "significance": "Victory of good over evil", "type": "lunar"},
-        {"name": "Gandhi Jayanti", "date": f"{year}-10-02", "significance": "National observance", "type": "national"},
-        {"name": "Diwali", "date": f"{year}-11-01", "significance": "Festival of lights", "type": "lunar"},
-        {"name": "Guru Nanak Jayanti", "date": f"{year}-11-15", "significance": "Birth of Guru Nanak Dev Ji", "type": "lunar"},
-        {"name": "Christmas", "date": f"{year}-12-25", "significance": "Christian observance", "type": "national"},
-        {"name": "Maha Shivaratri", "date": f"{year}-02-26", "significance": "Night of Lord Shiva", "type": "lunar"},
-        {"name": "Janmashtami", "date": f"{year}-08-26", "significance": "Birth of Lord Krishna", "type": "lunar"},
+
+    # Imports already available at module level; no need to import again here.
+
+    # Helper: month names in Vedic calendar (start with Chaitra).
+    month_names = [
+        "Chaitra",
+        "Vaishakha",
+        "Jyeshtha",
+        "Ashadha",
+        "Shravana",
+        "Bhadrapada",
+        "Ashwin",
+        "Kartika",
+        "Margashirsha",
+        "Pausha",
+        "Magha",
+        "Phalguna",
     ]
+
+    # Build a daily table for the whole year.
+    start = datetime(year, 1, 1)
+    days = [start + timedelta(days=i) for i in range(366) if start + timedelta(days=i) < datetime(year + 1, 1, 1)]
+    month_index = -1
+    current_month = None
+    festivals = []
+    sakranti_recorded = False
+
+    for dt in days:
+        sun_pos = SwissEphemeris.calculate_sun_position(dt)
+        moon_pos = SwissEphemeris.calculate_moon_position(dt)
+        tithi = calculate_tithi(dt, sun_pos["longitude"], moon_pos["longitude"])
+
+        # Detect start of new lunar month: tithi 1 of Shukla paksha.
+        if tithi["tithi_number"] == 1 and tithi["paksha"] == "Shukla":
+            month_index = (month_index + 1) % 12
+            current_month = month_names[month_index]
+
+        # Solar festival: Makar Sankranti (sun enters Capricorn, 300°-330°).
+        if not sakranti_recorded and sun_pos["longitude"] >= 300:
+            festivals.append(
+                {
+                    "name": "Makar Sankranti",
+                    "date": dt.strftime("%Y-%m-%d"),
+                    "significance": "Sun enters Capricorn",
+                    "type": "solar",
+                }
+            )
+            sakranti_recorded = True
+
+        # Lunar festivals based on tithi and month.
+        if tithi["name"] == "Amavasya" and tithi["paksha"] == "Krishna":
+            if current_month == "Kartika":
+                festivals.append(
+                    {
+                        "name": "Diwali",
+                        "date": dt.strftime("%Y-%m-%d"),
+                        "significance": "Festival of lights on Kartika Amavasya",
+                        "type": "lunar",
+                    }
+                )
+            elif current_month == "Phalguna":
+                festivals.append(
+                    {
+                        "name": "Holi",
+                        "date": dt.strftime("%Y-%m-%d"),
+                        "significance": "Festival of colors on Phalguna Amavasya",
+                        "type": "lunar",
+                    }
+                )
+
+        if tithi["name"] == "Panchami" and tithi["paksha"] == "Shukla" and current_month == "Vaishakha":
+            festivals.append(
+                {
+                    "name": "Vasant Panchami",
+                    "date": dt.strftime("%Y-%m-%d"),
+                    "significance": "Spring festival honoring Saraswati",
+                    "type": "lunar",
+                }
+            )
+
+    # Append fixed national dates.
+    fixed = [
+        {"name": "Republic Day", "date": f"{year}-01-26", "significance": "National observance", "type": "national"},
+        {"name": "Independence Day", "date": f"{year}-08-15", "significance": "National observance", "type": "national"},
+        {"name": "Christmas", "date": f"{year}-12-25", "significance": "Christian observance", "type": "national"},
+    ]
+    festivals.extend(fixed)
+
+    # Sort by date for consistency.
+    festivals.sort(key=lambda f: f["date"])
+    return festivals
 
 
 def get_festival_countdown(festival_date_str: str, now: datetime = None) -> dict:
