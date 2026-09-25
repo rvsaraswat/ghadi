@@ -1,7 +1,8 @@
 """Festival engine for calculating and managing festivals."""
 
 from datetime import datetime, timedelta
-from typing import List
+
+from app.core.astronomy import SwissEphemeris, calculate_tithi
 
 
 def get_recurring_festivals(year: int = None) -> list[dict]:
@@ -33,26 +34,30 @@ def get_recurring_festivals(year: int = None) -> list[dict]:
         "Phalguna",
     ]
 
-    # Build a daily table for the whole year.
-    start = datetime(year, 1, 1)
-    days = [start + timedelta(days=i) for i in range(366) if start + timedelta(days=i) < datetime(year + 1, 1, 1)]
-    month_index = -1
+    # Tithis are observed at sunrise. The astronomy helpers accept naive
+    # local wall-clock times, so use sunrise in the default Indian timezone.
+    start = datetime(year, 1, 1, 6)
+    days = [start + timedelta(days=i) for i in range(366) if start + timedelta(days=i) < datetime(year + 1, 1, 1, 6)]
     current_month = None
     festivals = []
     sakranti_recorded = False
+    autumn_festivals_recorded = set()
 
     for dt in days:
         sun_pos = SwissEphemeris.calculate_sun_position(dt)
         moon_pos = SwissEphemeris.calculate_moon_position(dt)
         tithi = calculate_tithi(dt, sun_pos["longitude"], moon_pos["longitude"])
 
-        # Detect start of new lunar month: tithi 1 of Shukla paksha.
-        if tithi["tithi_number"] == 1 and tithi["paksha"] == "Shukla":
-            month_index = (month_index + 1) % 12
-            current_month = month_names[month_index]
+        # A lunar month is named from the sidereal solar sign at its new moon.
+        # That name remains in effect until the next new moon.
+        if tithi["name"] == "Amavasya" and tithi["paksha"] == "Krishna":
+            sidereal_sun = (sun_pos["longitude"] - 27) % 360
+            solar_sign = int(sidereal_sun // 30)
+            current_month = month_names[(solar_sign + 1) % 12]
 
-        # Solar festival: Makar Sankranti (sun enters Capricorn, 300°-330°).
-        if not sakranti_recorded and sun_pos["longitude"] >= 300:
+        # Makar Sankranti is the Sun's sidereal ingress into Capricorn.
+        sidereal_sun = (sun_pos["longitude"] - 27) % 360
+        if not sakranti_recorded and sidereal_sun >= 270:
             festivals.append(
                 {
                     "name": "Makar Sankranti",
@@ -94,12 +99,22 @@ def get_recurring_festivals(year: int = None) -> list[dict]:
                 }
             )
 
+        if dt.month == 10 and tithi["paksha"] == "Shukla":
+            if tithi["name"] == "Pratipada" and "Navratri begins" not in autumn_festivals_recorded:
+                festivals.append({"name": "Navratri begins", "date": dt.strftime("%Y-%m-%d"), "significance": "Hindu observance", "type": "lunar"})
+                autumn_festivals_recorded.add("Navratri begins")
+            elif tithi["name"] == "Dashami" and "Dussehra" not in autumn_festivals_recorded:
+                festivals.append({"name": "Dussehra", "date": dt.strftime("%Y-%m-%d"), "significance": "Hindu observance", "type": "lunar"})
+                autumn_festivals_recorded.add("Dussehra")
+
     # Append fixed national dates.
     fixed = [
         {"name": "Republic Day", "date": f"{year}-01-26", "significance": "National observance", "type": "national"},
+        {"name": "Gandhi Jayanti", "date": f"{year}-10-02", "significance": "National observance", "type": "national"},
         {"name": "Independence Day", "date": f"{year}-08-15", "significance": "National observance", "type": "national"},
         {"name": "Christmas", "date": f"{year}-12-25", "significance": "Christian observance", "type": "national"},
     ]
+
     festivals.extend(fixed)
 
     # Sort by date for consistency.

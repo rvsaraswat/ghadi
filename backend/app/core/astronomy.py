@@ -103,14 +103,14 @@ class SwissEphemeris:
         jd = SwissEphemeris.julian_date(dt)
         T = (jd - J2000) / 36525.0
         
-        # Moon's mean longitude
-        Lm = SwissEphemeris.degrees_normalize(218.3165 + 48979.33 * T % 360)
-        
-        # Mean anomaly
-        Mm = SwissEphemeris.degrees_normalize(357.5291 + 35999.51 * T % 360)
+        # Moon's mean longitude and anomaly. These coefficients are per
+        # Julian century; using solar coefficients here makes lunar dates
+        # drift by roughly a month for every month calculated.
+        Lm = SwissEphemeris.degrees_normalize(218.3165 + 481267.8813 * T)
+        Mm = SwissEphemeris.degrees_normalize(134.9634 + 477198.8676 * T)
         
         # Sun's mean anomaly
-        Ms = SwissEphemeris.degrees_normalize(280.46646 + 36000.77 * T % 360)
+        Ms = SwissEphemeris.degrees_normalize(357.5291 + 35999.05 * T)
         
         # Simple approximation (production should use full ephemeris)
         lon = Lm + 6.289 * math.sin(Mm * DEG_TO_RAD) + \
@@ -193,8 +193,8 @@ def calculate_sunrise_sunset(dt: datetime, latitude: float, longitude: float,
 def _moon_equatorial(jd: float) -> Tuple[float, float]:
     """Return (right ascension, declination) in degrees for the moon at JD."""
     T = (jd - J2000) / 36525.0
-    Lm = SwissEphemeris.degrees_normalize(218.3165 + 48979.33 * T % 360)
-    Mm = SwissEphemeris.degrees_normalize(357.5291 + 35999.51 * T % 360)
+    Lm = SwissEphemeris.degrees_normalize(218.3165 + 481267.8813 * T)
+    Mm = SwissEphemeris.degrees_normalize(134.9634 + 477198.8676 * T)
     lon = Lm + 6.289 * math.sin(Mm * DEG_TO_RAD)
     lon = SwissEphemeris.degrees_normalize(lon)
     beta = math.radians(5.145 * math.sin((Lm - 134.139) * DEG_TO_RAD))
