@@ -5,12 +5,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "28000:28000"
     environment:
       - DATABASE_URL=sqlite:///./vedic_clock.db
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 28000
   redis:
     image: redis:7
     ports:
