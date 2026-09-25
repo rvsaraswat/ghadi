@@ -25,7 +25,37 @@ class _Dashboard extends StatelessWidget { const _Dashboard({required this.data}
 class _HeroCard extends StatelessWidget { const _HeroCard({required this.vedic}); final VedicTime vedic; @override Widget build(BuildContext context) => Card(color: Theme.of(context).colorScheme.primaryContainer, child: Padding(padding: const EdgeInsets.all(22), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Current alignment', style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 8), Text(vedic.tithi, style: Theme.of(context).textTheme.headlineMedium), const SizedBox(height: 8), Text('${vedic.nakshatra} · ${vedic.yoga} · ${vedic.karana}')]))); }
 class _FactCard extends StatelessWidget { const _FactCard(this.width, this.label, this.value); final double width; final String label, value; @override Widget build(BuildContext context) => SizedBox(width: width, child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: Theme.of(context).textTheme.labelLarge), const SizedBox(height: 8), Text(value, style: Theme.of(context).textTheme.titleMedium)])))); }
 class _PanchangaView extends StatelessWidget { const _PanchangaView({required this.data}); final Panchanga data; @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [Text('Panchanga', style: Theme.of(context).textTheme.headlineSmall), const SizedBox(height: 18), _FactCard(double.infinity, 'Tithi', '${data.tithi} · ${data.paksha}'), const SizedBox(height: 12), _FactCard(double.infinity, 'Nakshatra', data.nakshatra), const SizedBox(height: 12), _FactCard(double.infinity, 'Yoga', data.yoga), const SizedBox(height: 12), _FactCard(double.infinity, 'Karana', data.karana), const SizedBox(height: 22), Text('Solar rhythm', style: Theme.of(context).textTheme.titleLarge), ListTile(title: const Text('Sunrise'), trailing: Text(_time(data.sunrise))), ListTile(title: const Text('Sunset'), trailing: Text(_time(data.sunset))), ListTile(title: const Text('Rahu Kaal'), trailing: Text('${_time(data.rahuStart)} - ${_time(data.rahuEnd)}'))]); }
-class _FestivalView extends StatelessWidget { const _FestivalView({required this.festivals}); final List<Festival> festivals; @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [Text('Festivals', style: Theme.of(context).textTheme.headlineSmall), const SizedBox(height: 18), if (festivals.isEmpty) const Padding(padding: EdgeInsets.only(top: 48), child: Center(child: Text('No upcoming festivals yet.'))) else ...festivals.map((f) => Card(margin: const EdgeInsets.only(bottom: 10), child: ListTile(leading: const Icon(Icons.celebration_outlined), title: Text(f.name), subtitle: Text(f.significance ?? _date(f.date)), trailing: Text(_date(f.date))))]); }
+class _FestivalView extends StatelessWidget {
+  const _FestivalView({required this.festivals});
+
+  final List<Festival> festivals;
+
+  @override
+  Widget build(BuildContext context) => ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text('Festivals', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 18),
+          if (festivals.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 48),
+              child: Center(child: Text('No upcoming festivals yet.')),
+            )
+          else
+            ...festivals.map(
+              (festival) => Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: ListTile(
+                  leading: const Icon(Icons.celebration_outlined),
+                  title: Text(festival.name),
+                  subtitle: Text(festival.significance ?? _date(festival.date)),
+                  trailing: Text(_date(festival.date)),
+                ),
+              ),
+            ),
+        ],
+      );
+}
 class _Settings extends StatefulWidget { const _Settings({required this.api}); final ApiClient api; @override State<_Settings> createState() => _SettingsState(); }
 class _SettingsState extends State<_Settings> { final _lat = TextEditingController(text: '28.6139'); final _lng = TextEditingController(text: '77.2090'); bool _busy = false; String? _message; @override void dispose() { _lat.dispose(); _lng.dispose(); super.dispose(); } Future<void> _save() async { final lat = double.tryParse(_lat.text); final lng = double.tryParse(_lng.text); if (lat == null || lng == null) { setState(() => _message = 'Enter valid coordinates.'); return; } setState(() { _busy = true; _message = null; }); try { await widget.api.updatePreferences(latitude: lat, longitude: lng, timezone: 'Asia/Kolkata', theme: 'light'); setState(() => _message = 'Location saved.'); } on ApiException catch (e) { setState(() => _message = e.message); } finally { if (mounted) setState(() => _busy = false); } } @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [Text('Settings', style: Theme.of(context).textTheme.headlineSmall), const SizedBox(height: 20), TextField(controller: _lat, keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true), decoration: const InputDecoration(labelText: 'Latitude', border: OutlineInputBorder())), const SizedBox(height: 12), TextField(controller: _lng, keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true), decoration: const InputDecoration(labelText: 'Longitude', border: OutlineInputBorder())), const SizedBox(height: 12), const Text('Timezone: Asia/Kolkata'), const SizedBox(height: 18), FilledButton(onPressed: _busy ? null : _save, child: Text(_busy ? 'Saving...' : 'Save location')), if (_message != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(_message!))]); }
 String _time(DateTime? value) => value == null ? 'Unavailable' : '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';

@@ -120,6 +120,16 @@ You can also spin up everything with Docker Compose:
 docker compose up --build
 ```
 
+For a home-server deployment, create a root `.env` file before building and
+replace the example address with the server's LAN address:
+
+```dotenv
+API_BASE_URL=http://192.168.1.100:28000
+```
+
+The frontend embeds this value during its Docker build. `localhost` would point
+to the device running the browser, not the home server.
+
 Backend will be available on `http://localhost:8000` and the Redis cache on `6379`.
 
 # ghadi
