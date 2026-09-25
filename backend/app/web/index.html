@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ayanm | Panchanga</title>
+  <link rel="stylesheet" href="/assets/styles.css?v=ui-audit-2">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="masthead">
+      <a class="brand" href="/"><span class="brand-mark">ॐ</span><span>AYANM</span><i></i><span>Panchanga</span></a>
+      <div class="masthead-actions">
+        <button class="place-button" data-view="settings" type="button"><span class="place-pin">●</span><span id="location-label">Selected location</span></button>
+        <div class="language-switch" role="group" aria-label="Language"><button type="button" data-language="en" aria-pressed="true">EN</button><button type="button" data-language="hi" aria-pressed="false">हिं</button></div>
+        <button id="refresh-calculation" class="round-button" type="button" aria-label="Recalculate Panchanga" title="Recalculate">↻</button>
+      </div>
+    </header>
+
+    <nav class="top-nav" aria-label="Main navigation">
+      <button class="nav active" data-view="dashboard" data-title-key="today"><span>⌂</span><span data-i18n="today">Today</span></button>
+      <button class="nav" data-view="clock" data-title-key="liveClock"><span>◷</span><span data-i18n="liveClock">Live Clock</span></button>
+      <button class="nav" data-view="panchanga" data-title-key="todaysPanchanga"><span>▦</span><span data-i18n="todaysPanchanga">Today’s Panchanga</span></button>
+      <button class="nav" data-view="calendar" data-title-key="festivalCalendar"><span>✦</span><span data-i18n="festivalCalendar">Festival Calendar</span></button>
+      <button class="nav" data-view="settings" data-title-key="location"><span>⚙</span><span data-i18n="location">Location</span></button>
+    </nav>
+
+    <section class="workspace">
+      <div id="banner" class="banner" role="status">Calculating Panchanga data for the selected location.</div>
+      <section id="dashboard" class="view active">
+        <section class="cosmic-hero" aria-label="Current local Panchanga">
+          <div class="dial-wrap" aria-hidden="true"><div class="sun-dial"><span class="dial-dot dot-one"></span><span class="dial-dot dot-two"></span><span class="dial-dot dot-three"></span><i id="clock-hour-hand" class="hour-hand"></i><i id="clock-minute-hand" class="minute-hand"></i><b></b></div></div>
+          <div class="hero-reading"><p class="eyebrow" data-i18n="localPanchanga">AYANM / LOCAL PANCHANGA</p><h1 id="hero-time">--:--</h1><p id="hero-period">--</p><div class="hero-rule"></div><p id="hero-summary">Calculating celestial data</p><p id="muhurta-countdown">Calculating for the selected location.</p></div>
+        </section>
+
+        <section class="today-section">
+          <div class="section-heading"><p class="eyebrow">TODAY'S PANCHANGA</p><h2 id="current-heading">Loading today’s calculation</h2></div>
+          <div class="feature-grid">
+            <article class="feature-card solar-card"><div class="feature-icon">☀</div><div><h3 id="solar-card-title">Sunrise & Sunset</h3><p><strong id="day-sunrise">--</strong><span></span><strong id="day-sunset">--</strong></p><button class="card-link" data-view="panchanga" type="button">View details ›</button></div></article>
+            <article class="feature-card lunar-card"><div class="feature-icon">☾</div><div><h3 id="lunar-card-title">Moonrise & Moonset</h3><p><strong id="day-moonrise">--</strong><span></span><strong id="day-moonset">--</strong></p><button class="card-link" data-view="panchanga" type="button">View details ›</button></div></article>
+            <article class="feature-card brahma-card"><div class="feature-icon">ॐ</div><div><h3 id="brahma-card-title">Brahma Muhurta</h3><p><strong id="day-brahma">--</strong></p><button class="card-link" data-view="panchanga" type="button">View details ›</button></div></article>
+            <article class="feature-card rahu-card"><div class="feature-icon">△</div><div><h3 id="rahu-card-title">Rahu Kaal</h3><p><strong id="day-rahu">--</strong></p><button class="card-link" data-view="panchanga" type="button">View details ›</button></div></article>
+          </div>
+          <p class="daily-intent" id="guidance-copy">Times are calculated for the selected location and timezone.</p>
+        </section>
+
+        <section class="festival-section"><div class="section-heading compact"><p class="eyebrow">COMING CELEBRATIONS</p><h2 id="festival-heading">Upcoming Festivals</h2><button class="text-link" data-view="calendar" type="button">Calendar</button></div><div id="upcoming-list" class="festival-strip"></div></section>
+
+        <details class="timeline-details"><summary>Solar, lunar, and daily time windows</summary><section class="timeline" aria-label="Solar, lunar, and daily time windows"><div class="timeline-heading"><span>Local time windows</span><span id="sun-cycle">Sunrise to sunset</span></div><div class="timeline-track"><div class="daylight" id="daylight-window"></div><div class="timeline-window brahma" id="brahma-window">Calculating</div><div class="timeline-window rahu" id="rahu-window">Calculating</div><div class="celestial-marker sunrise-marker" id="sunrise-marker"><span>☀</span><b>Sunrise</b></div><div class="celestial-marker sunset-marker" id="sunset-marker"><span>☀</span><b>Sunset</b></div><div class="celestial-marker moonrise-marker" id="moonrise-marker"><span>☾</span><b>Moonrise</b></div><div class="celestial-marker moonset-marker" id="moonset-marker"><span>☾</span><b>Moonset</b></div><div class="now-marker" id="now-marker"><span>Now</span></div><div class="hours"><span>0</span><span>3</span><span>6</span><span>9</span><span>12</span><span>15</span><span>18</span><span>21</span><span>24</span></div></div></section></details>
+        <div id="fact-grid" class="fact-grid" aria-live="polite"></div>
+        <section class="utility-section"><article class="location-card"><p class="eyebrow">CALCULATION LOCATION</p><div class="map-art"><span class="map-pin">●</span><strong id="location-card-name">Selected location</strong></div><p id="location-coordinates" class="coordinates">--</p><p id="location-timezone" class="timezone">--</p><button class="location-search" data-view="settings" type="button">Change location</button></article><article class="quick-card"><p class="eyebrow">LIVE DETAILS</p><div class="quick-stats"><div><span id="sunrise">--</span><small>Sunrise</small></div><div><span id="sunset">--</span><small>Sunset</small></div><div><span id="moonrise">--</span><small>Moonrise</small></div><div><span id="moonset">--</span><small>Moonset</small></div></div><div class="location-status"><span class="status-dot">Calculating</span><small id="clock-zone">Asia/Kolkata</small></div></article></section>
+      </section>
+
+      <section id="clock" class="view centered"><p class="eyebrow clock-view-label">LIVE LOCAL TIME</p><div class="cosmic-clock"><span id="large-time">--:--:--</span><small id="clock-detail">Calculating location-based celestial data</small></div></section>
+      <section id="panchanga" class="view data-view"><p class="eyebrow">TODAY’S PANCHANGA</p><h2 id="panchanga-heading">Calculating today’s reading</h2><div id="detail-grid" class="detail-grid"></div></section>
+      <section id="calendar" class="view calendar-view"><div class="calendar-top"><div><p class="eyebrow">PAN-INDIAN OBSERVANCES</p><h2 id="calendar-title">Festival Calendar</h2></div><div class="calendar-controls"><button id="previous-month" class="round-button" type="button" aria-label="Previous month">‹</button><button id="calendar-today" class="warm-button" type="button">Today</button><button id="next-month" class="round-button" type="button" aria-label="Next month">›</button></div></div><p id="calendar-note" class="calendar-note">Lunar observance dates can vary by region and tradition. This catalog is a maintained pan-Indian reference.</p><div class="weekday-row"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="calendar-grid" class="calendar-grid" aria-live="polite"></div><section class="calendar-events"><h3 id="calendar-events-title">Events this month</h3><div id="calendar-events-list"></div></section></section>
+      <section id="settings" class="view data-view"><p class="eyebrow">LOCATION CALIBRATION</p><h2 id="location-heading">Calculate for any location</h2><form id="location-form" class="settings-form"><label><span data-i18n="latitude">Latitude</span><input id="latitude" type="number" min="-90" max="90" step="any" value="25.3176" required></label><label><span data-i18n="longitude">Longitude</span><input id="longitude" type="number" min="-180" max="180" step="any" value="82.9739" required></label><label><span data-i18n="timezoneLabel">Timezone</span><input id="timezone" value="Asia/Kolkata" required></label><label><span data-i18n="elevation">Elevation (metres)</span><input id="elevation" type="number" min="-500" max="10000" step="any" value="0"></label><div class="location-actions"><button type="button" id="device-location">Use device location</button><button type="button" id="share-location">Copy share link</button><button type="submit">Recalculate</button></div><p id="settings-message" class="form-error" aria-live="polite"></p></form></section>
+    </section>
+  </main>
+  <script src="/assets/app.js?v=warm-ui-9"></script>
+</body>
+</html>

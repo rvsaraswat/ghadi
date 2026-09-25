@@ -1,0 +1,30 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+backend/venv/
+backend/.venv/
+
+# Local databases and Alembic test artifacts
+*.db
+*.sqlite
+*.sqlite3
+
+# Flutter and Dart
+frontend/.dart_tool/
+frontend/.packages
+frontend/build/
+
+# IDE and operating-system files
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
