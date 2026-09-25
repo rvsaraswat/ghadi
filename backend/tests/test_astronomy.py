@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from app.core.astronomy import calculate_karana, calculate_tithi, calculate_yoga
+from app.services.panchanga_service import get_cosmic_panchanga
 
 
 @pytest.mark.parametrize(
@@ -46,3 +47,15 @@ def test_yoga_uses_sidereal_longitude_sum_and_standard_name():
 
     assert result["yoga_index"] == 0
     assert result["name"] == "Vishkambha"
+
+
+def test_cosmic_payload_has_traceable_positions_for_all_nine_bodies():
+    result = get_cosmic_panchanga(datetime(2026, 9, 25, 12, 0))
+
+    assert result["ayanamsha"] == "Lahiri"
+    assert len(result["planets"]) == 9
+    assert {planet["name"] for planet in result["planets"]} == {
+        "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"
+    }
+    assert all(0 <= planet["longitude"] < 360 for planet in result["planets"])
+    assert all(1 <= planet["pada"] <= 4 for planet in result["planets"])

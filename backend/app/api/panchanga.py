@@ -1,5 +1,6 @@
 """Panchanga API endpoints."""
 
+from datetime import datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,8 +9,8 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.models import User, UserPreference
-from app.schemas.schemas import PanchangaResponse
-from app.services.panchanga_service import get_or_calculate_panchanga
+from app.schemas.schemas import CosmicResponse, PanchangaResponse
+from app.services.panchanga_service import get_or_calculate_panchanga, get_cosmic_panchanga
 
 router = APIRouter(prefix="/panchanga", tags=["Panchanga"])
 
@@ -47,3 +48,12 @@ def get_today_panchanga(
     return PanchangaResponse(**get_or_calculate_panchanga(
         db, pref.latitude, pref.longitude, pref.elevation, pref.timezone
     ))
+
+
+@router.get("/cosmic", response_model=CosmicResponse)
+def get_cosmic(
+    at: datetime | None = Query(default=None),
+    ayanamsha: float = Query(default=27.0, ge=0, le=40),
+):
+    """Return sidereal planet positions and the inputs behind today's Panchanga."""
+    return get_cosmic_panchanga(at or datetime.now(), ayanamsha)

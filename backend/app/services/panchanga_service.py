@@ -1,12 +1,13 @@
 """Panchanga calculation service."""
 
 from datetime import datetime, timedelta
+import math
 from zoneinfo import ZoneInfo
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.astronomy import (
-    SwissEphemeris, calculate_sunrise_sunset, 
+    J2000, SwissEphemeris, calculate_sunrise_sunset,
     calculate_moonrise_moonset, calculate_tithi,
     calculate_nakshatra, calculate_yoga, calculate_karana,
     calculate_muhurta, calculate_brahma_muhurta, calculate_rahu_kaal,
@@ -158,3 +159,51 @@ def get_or_calculate_panchanga(db: Session, latitude: float, longitude: float, e
     data = get_today_panchanga(db, latitude, longitude, elevation, timezone)
     cache = cache_panchanga(db, data)
     return cache_to_panchanga(cache)
+
+
+def get_cosmic_panchanga(at: datetime, ayanamsha_degrees: float = 27.0) -> dict:
+    """Return traceable sidereal positions for the Cosmos dashboard.
+
+    The provider boundary is intentionally kept here: this mean-orbit provider can
+    be replaced by pysweph without changing the API or the visualization layer.
+    """
+    from app.core.astronomy import calculate_karana, calculate_nakshatra, calculate_tithi, calculate_yoga
+
+    sun = SwissEphemeris.calculate_sun_position(at)["longitude"]
+    moon = SwissEphemeris.calculate_moon_position(at)["longitude"]
+    tithi = calculate_tithi(at, sun, moon)
+    nakshatra = calculate_nakshatra(at, moon)
+    yoga = calculate_yoga(at, sun, moon)
+    karana = calculate_karana(at, sun, moon)
+
+    rashi_names = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    nakshatra_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
+    days = SwissEphemeris.julian_date(at) - J2000
+    orbitals = [
+        ("Sun", "☉", sun, 0.985647, 0.0), ("Moon", "☽", moon, 13.176396, 0.0),
+        ("Mars", "♂", 355.45 + days * 0.524020, 0.524020, 0.3),
+        ("Mercury", "☿", 252.25 + days * 4.092334, 1.383, 0.1),
+        ("Jupiter", "♃", 34.35 + days * 0.083056, 0.083056, 0.05),
+        ("Venus", "♀", 181.98 + days * 1.602130, 1.2, 0.15),
+        ("Saturn", "♄", 50.08 + days * 0.033497, 0.033497, 0.02),
+        ("Rahu", "☊", 125.04 - days * 0.0529538, -0.0529538, 0.0),
+        ("Ketu", "☋", 305.04 - days * 0.0529538, -0.0529538, 0.0),
+    ]
+    planets = []
+    for name, symbol, tropical, speed, latitude in orbitals:
+        longitude = (tropical - ayanamsha_degrees) % 360
+        segment = longitude / (360 / 27)
+        planets.append({
+            "name": name, "symbol": symbol, "longitude": round(longitude, 3),
+            "latitude": latitude, "rashi": rashi_names[int(longitude // 30)],
+            "nakshatra": nakshatra_names[int(segment) % 27], "pada": int((segment % 1) * 4) + 1,
+            "speed": round(speed, 3), "retrograde": speed < 0,
+        })
+    return {
+        "date": at, "ayanamsha": "Lahiri", "ayanamsha_degrees": ayanamsha_degrees,
+        "sun_longitude": round((sun - ayanamsha_degrees) % 360, 3),
+        "moon_longitude": round((moon - ayanamsha_degrees) % 360, 3),
+        "elongation": round(tithi["elongation"], 3), "tithi_number": tithi["tithi_number"],
+        "tithi_name": tithi["name"], "paksha": tithi["paksha"], "nakshatra_name": nakshatra["name"],
+        "yoga_name": yoga["name"], "karana_name": karana["name"], "planets": planets,
+    }

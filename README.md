@@ -88,6 +88,14 @@ flutter test
 | Migrations  | Alembic           |
 | Deploy      | Docker, Cloudflare|
 
+## Cosmic Panchanga
+
+The browser dashboard includes a Cosmos view at **Cosmos** in the main navigation. It exposes the sidereal inputs behind Tithi, Nakshatra, Yoga, and Karana; an SVG zodiac and 27-segment Nakshatra ring; planet telemetry; playback from -7 to +30 days; transition cards; and an educational solar-system orbit model.
+
+The API contract is `GET /panchanga/cosmic?at=YYYY-MM-DDTHH:MM:SS&ayanamsha=27`. The calculation service returns Lahiri metadata and keeps the ephemeris provider behind `get_cosmic_panchanga()`, so a `pysweph` implementation can replace the current educational mean-orbit provider without changing the dashboard contract. The current repository does not yet vendor Swiss Ephemeris or a React/TypeScript build, so the shipped implementation intentionally remains compatible with the existing FastAPI static dashboard and labels the provider boundary in code.
+
+Run the browser dashboard locally with `cd backend` followed by `python -m uvicorn app.main:app --reload`, then open `http://localhost:8000`.
+
 ## 📄 License
 
 Proprietary — All Rights Reserved

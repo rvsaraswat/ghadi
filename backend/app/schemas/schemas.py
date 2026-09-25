@@ -130,6 +130,34 @@ class PanchangaResponse(BaseModel):
     time_windows: TimeWindows
 
 
+class PlanetPosition(BaseModel):
+    name: str
+    symbol: str
+    longitude: float
+    latitude: float = 0.0
+    rashi: str
+    nakshatra: str
+    pada: int
+    speed: float
+    retrograde: bool = False
+
+
+class CosmicResponse(BaseModel):
+    date: datetime
+    ayanamsha: str
+    ayanamsha_degrees: float
+    sun_longitude: float
+    moon_longitude: float
+    elongation: float
+    tithi_number: int
+    tithi_name: str
+    paksha: str
+    nakshatra_name: str
+    yoga_name: str
+    karana_name: str
+    planets: list[PlanetPosition]
+
+
 # ==================== Festival Schemas ====================
 
 class FestivalItem(BaseModel):
